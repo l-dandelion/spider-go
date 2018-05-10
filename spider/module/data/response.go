@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/l-dandelion/yi-ants-go/lib/library/reader"
+	"github.com/l-dandelion/spider-go/lib/library/reader"
 	"io"
 	"golang.org/x/net/html/charset"
 	"io/ioutil"
