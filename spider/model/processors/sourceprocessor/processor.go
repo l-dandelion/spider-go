@@ -1,28 +1,25 @@
 package sourceprocessor
 
 import (
-	"github.com/l-dandelion/yi-ants-go/core/module"
-	"github.com/l-dandelion/yi-ants-go/lib/constant"
-	"github.com/l-dandelion/yi-ants-go/lib/library/plugin"
-	"github.com/l-dandelion/yi-ants-go/core/processors/model"
-	"fmt"
+	"errors"
+	"github.com/l-dandelion/spider-go/lib/library/plugin"
+	"github.com/l-dandelion/spider-go/spider/model/processors/model"
+	"github.com/l-dandelion/spider-go/spider/module"
 )
 
-func GetSourceProcessorsFromModel(model *model.Model) ([]module.ProcessItem, *constant.YiError) {
-	fmt.Println(model)
+func GetSourceProcessorsFromModel(model *model.Model) ([]module.ProcessItem, error) {
 	source, ok := model.Rule["GenProcessors"]
 	if !ok {
-		return nil, constant.NewYiErrorf(constant.ERR_GET_PROCESSORS_SOURCE, `Can't get source from model.Rule["GenProcessors"]`)
+		return nil, errors.New(`Can't get source from model.Rule["GenProcessors"]`)
 	}
 	f, err := plugin.GenFuncFromStr(source, "GenProcessors")
 	if err != nil {
-		return nil, constant.NewYiErrore(constant.ERR_GET_PROCESSORS, err)
+		return nil, err
 	}
 	genFunc, ok := f.(func() []module.ProcessItem)
 	if !ok {
-		return nil, constant.NewYiErrorf(constant.ERR_GET_PROCESSORS, "Can't convert f to func()[]modeule.ProcessItem")
+		return nil, errors.New("Can't convert f to func()[]modeule.ProcessItem")
 	}
 	result := genFunc()
-	fmt.Println(result)
 	return result, nil
 }

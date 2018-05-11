@@ -1,16 +1,16 @@
 package processors
 
 import (
-	"github.com/l-dandelion/yi-ants-go/core/module"
-	"github.com/l-dandelion/yi-ants-go/lib/constant"
-	"github.com/l-dandelion/yi-ants-go/core/processors/mysqlprocessor"
-	"github.com/l-dandelion/yi-ants-go/core/processors/sourceprocessor"
-	"github.com/l-dandelion/yi-ants-go/core/processors/model"
-	"github.com/l-dandelion/yi-ants-go/core/processors/consoleprocessor"
+	"github.com/l-dandelion/spider-go/spider/module"
+	"github.com/l-dandelion/spider-go/spider/model/processors/mysqlprocessor"
+	"github.com/l-dandelion/spider-go/spider/model/processors/sourceprocessor"
+	"github.com/l-dandelion/spider-go/spider/model/processors/model"
+	"github.com/l-dandelion/spider-go/spider/model/processors/consoleprocessor"
+	"fmt"
 )
 
 
-func GenProcessorsByModel(model *model.Model) ([]module.ProcessItem, *constant.YiError){
+func GenProcessorsByModel(model *model.Model) ([]module.ProcessItem, error){
 	switch model.Type {
 	case "mysql":
 		return []module.ProcessItem{mysqlprocessor.DefaultMysqlProcessor}, nil
@@ -19,16 +19,16 @@ func GenProcessorsByModel(model *model.Model) ([]module.ProcessItem, *constant.Y
 	case "source":
 		return sourceprocessor.GetSourceProcessorsFromModel(model)
 	default:
-		return nil, constant.NewYiErrorf(constant.ERR_UNSUPPORTED_MODEL_TYPE, "Unsupported model type.(modelType: %s)", model.Type)
+		return nil, fmt.Errorf("Unsupported model type.(modelType: %s)", model.Type)
 	}
 }
 
-func GenProcessorsByModels(models []*model.Model) ([]module.ProcessItem, *constant.YiError){
+func GenProcessorsByModels(models []*model.Model) ([]module.ProcessItem, error){
 	processors := []module.ProcessItem{}
 	for _, model := range models {
-		ps, yierr := GenProcessorsByModel(model)
-		if yierr != nil {
-			return nil, yierr
+		ps, err := GenProcessorsByModel(model)
+		if err != nil {
+			return nil, err
 		}
 		processors = append(processors, ps...)
 	}

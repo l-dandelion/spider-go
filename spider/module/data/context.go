@@ -49,7 +49,7 @@ func (ctx *Context) PushError(errs ...error) *Context {
 /*
  * 添加新请求
  */
-func (ctx *Context) PushRequest(reqs []*Request) *Context {
+func (ctx *Context) PushRequest(reqs ...*Request) *Context {
 	if len(reqs) == 0 {
 		return ctx
 	}
@@ -66,7 +66,7 @@ func (ctx *Context) PushRequest(reqs []*Request) *Context {
 /*
  * 添加条目
  */
-func (ctx *Context) PushItem(items []Item) *Context {
+func (ctx *Context) PushItem(items ...Item) *Context {
 	if len(items) == 0 {
 		return ctx
 	}

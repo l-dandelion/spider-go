@@ -1,20 +1,20 @@
 package mysqlprocessor
 
 import (
-	"github.com/l-dandelion/yi-ants-go/core/module/data"
-	"github.com/l-dandelion/yi-ants-go/lib/constant"
+	"github.com/l-dandelion/spider-go/spider/module/data"
+	"errors"
 )
 
-var DefaultMysqlProcessor = func(item data.Item) (result data.Item, yierr *constant.YiError) {
+var DefaultMysqlProcessor = func(item data.Item) (result data.Item, err error) {
 	if _, ok := item["kind"]; !ok {
-		return nil, constant.NewYiErrorf(constant.ERR_CRAWL_PIPELINE, "Kind is empty.")
+		return nil, errors.New("Empty kind.")
 	}
 	kind := item["kind"].(string)
 	if kind != "mysql" {
 		return nil, nil
 	}
 	if _, ok := item["tableName"]; !ok {
-		return nil, constant.NewYiErrorf(constant.ERR_CRAWL_PIPELINE, "Table name not found.")
+		return nil, errors.New("Table name not found.")
 	}
 	tableName := item["tableName"].(string)
 	delete(item, "tableName")

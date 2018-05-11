@@ -8,7 +8,7 @@ import (
 	"database/sql"
 	log "github.com/sirupsen/logrus"
 	"time"
-	"github.com/l-dandelion/yi-ants-go/lib/library/pool"
+	"github.com/l-dandelion/spider-go/lib/library/pool"
 	"fmt"
 )
 

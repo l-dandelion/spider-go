@@ -4,42 +4,39 @@ import (
 	"encoding/json"
 	"github.com/PuerkitoBio/goquery"
 	"strings"
-	"github.com/l-dandelion/yi-ants-go/core/module/data"
+	"github.com/l-dandelion/spider-go/spider/module/data"
 	"github.com/l-dandelion/yi-ants-go/lib/utils"
 	"net/http"
 	"github.com/l-dandelion/yi-ants-go/lib/library/parseurl"
-	"github.com/l-dandelion/yi-ants-go/lib/constant"
-	"github.com/l-dandelion/yi-ants-go/core/parsers/model"
-	"fmt"
+	"github.com/l-dandelion/spider-go/spider/model/parsers/model"
 )
 
-func TemplateRuleProcess(model *model.Model, resp *data.Response) (dataList []data.Data, errorList []*constant.YiError) {
-	dataList = []data.Data{}
-	errorList = []*constant.YiError{}
+func TemplateRuleProcess(model *model.Model, ctx *data.Context) {
+	resp := ctx.Response
 	rule := model.Rule
 
 	doc, err := resp.GetDom()
 	if err != nil {
-		errorList = append(errorList, constant.NewYiErrore(constant.ERR_CRAWL_GET_DOM, err))
+		ctx.PushError(err)
 		return
 	}
 
 	if len(model.WantedRegUrls) > 0 {
 		doc.Find("a").Each(func(i int, sel *goquery.Selection) {
 			href, _ := sel.Attr("href")
-			href, err = utils.GetComplateUrl(resp.HTTPRequest().URL, href)
+			href, err = utils.GetComplateUrl(ctx.HttpReq.URL, href)
 			if err != nil {
-				errorList = append(errorList, constant.NewYiErrore(constant.ERR_CRAWL_GET_COMPLATE_URL, err))
+				ctx.PushError(err)
 				return
 			}
 			
 			httpReq, err := http.NewRequest("GET", href, nil)
 			if err != nil {
-				errorList = append(errorList, constant.NewYiErrore(constant.ERR_CRAWL_NEW_HTTP_REQUEST, err))
+				ctx.PushError(err)
 				return
 			}
-			dataList = append(dataList, data.NewRequest(httpReq))
 
+			ctx.PushRequest(data.NewRequest(httpReq))
 		})
 	}
 
@@ -59,35 +56,33 @@ func TemplateRuleProcess(model *model.Model, resp *data.Response) (dataList []da
 			if mdata == nil {
 				return
 			}
-			dataList = append(dataList, data.Item(mdata))
+			ctx.PushItem(data.Item(mdata))
 			if len(model.AddQueue) > 0 {
 				urls := parseurl.ParseReqUrl(model.AddQueue, mdata)
-				fmt.Println(urls, " ", model.AddQueue, " ", mdata)
 				for _, u := range urls {
 					httpReq, err := http.NewRequest("GET", u, nil)
 					if err != nil {
-						errorList = append(errorList, constant.NewYiErrore(constant.ERR_CRAWL_ANALYZER, err))
+						ctx.PushError(err)
 						return
 					}
-					dataList = append(dataList, data.NewRequest(httpReq))
+					ctx.PushRequest(data.NewRequest(httpReq))
 				}
 			}
-
 		})
 	}
 
 	if resultType == "map" {
 		mdata := getMapFromDom(rule, doc.Selection)
-		dataList = append(dataList, data.Item(mdata))
+		ctx.PushItem(data.Item(mdata))
 		if len(model.AddQueue) > 0 {
 			urls := parseurl.ParseReqUrl(model.AddQueue, mdata)
 			for _, u := range urls {
 				httpReq, err := http.NewRequest("GET", u, nil)
 				if err != nil {
-					errorList = append(errorList, constant.NewYiErrore(constant.ERR_CRAWL_ANALYZER, err))
+					ctx.PushError(err)
 					return
 				}
-				dataList = append(dataList, data.NewRequest(httpReq))
+				ctx.PushRequest(data.NewRequest(httpReq))
 			}
 		}
 	}

@@ -9,6 +9,7 @@ import (
 var (
 	DefaultBufferCap       = uint32(1000)
 	DefaultMaxBufferNumber = uint32(100000)
+	DefaultQueues = NewQueues()
 )
 
 type ContextQueue map[string]*data.Context
