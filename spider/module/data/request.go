@@ -6,12 +6,13 @@ import "net/http"
  * request struct
  */
 type Request struct {
-	NodeName   string
-	SpiderName string
-	HttpReq    *http.Request          // the http request
-	Depth      uint32                 // crawl depth
-	Proxy      string                 // use proxy if not empty
-	Extra      map[string]interface{} // additional information(used for context)
+	NodeName       string                 //分配的节点名
+	BackUpNodeName string                 //该请求的备份节点
+	SpiderName     string                 //该请求所属爬虫
+	HttpReq        *http.Request          // the http request
+	Depth          uint32                 // crawl depth
+	Proxy          string                 // use proxy if not empty
+	Extra          map[string]interface{} // additional information(used for context)
 }
 
 /*

@@ -78,3 +78,10 @@ func (ctx *Context) PushItem(items []Item) *Context {
 	}
 	return ctx
 }
+
+/*
+ * 唯一标志
+ */
+func (ctx *Context) Unique() string {
+	return ctx.HttpReq.URL.String()
+}
